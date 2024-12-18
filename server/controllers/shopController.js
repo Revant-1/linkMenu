@@ -55,14 +55,13 @@ const createShop = asyncHandler(async (req, res) => {
     // Check if slug already exists, if so append a number
     let existingShop = await Shop.findOne({ slug });
     if (existingShop) {
-      slug += `-${Date.now()}`;  // Append unique identifier
+      slug += `-${Date.now()}`; // Append unique identifier
     }
 
     const shopData = {
       user: req.user._id,
       ...req.body,
       slug,
-      menu: req.body.menu,
     };
 
     const shop = new Shop(shopData);
@@ -98,21 +97,9 @@ const updateShop = asyncHandler(async (req, res) => {
       ? req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
       : shop.slug;
 
-    // Convert menu array to proper format and validate
-    const menuData = {};
-    if (Array.isArray(req.body.menu)) {
-      req.body.menu.forEach(category => {
-        category.items.forEach(item => {
-          if (item.description === '') item.description = null; // Set to null if empty
-        });
-        menuData[category.categoryName] = category.items;
-      });
-    }
-
     const updatedData = {
       ...req.body,
       slug,
-      menu: menuData,
     };
 
     const updatedShop = await Shop.findByIdAndUpdate(req.params.id, updatedData, { new: true, runValidators: true });

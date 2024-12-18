@@ -58,6 +58,17 @@ const socialSchema = new mongoose.Schema({
   reviews: String
 });
 
+const categorySchema = new mongoose.Schema({
+  categoryName: {
+    type: String,
+    required: true,
+  },
+  items: {
+    type: [menuItemSchema],
+    default: []
+  }
+});
+
 const shopSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -105,9 +116,8 @@ const shopSchema = new mongoose.Schema({
     required: true,
   },
   menu: {
-    type: Map,
-    of: [menuItemSchema],
-    default: new Map(),
+    type: [categorySchema],
+    default: []
   },
   slug: {
     type: String,
@@ -132,24 +142,6 @@ shopSchema.pre('save', function(next) {
     .replace(/^-+|-+$/g, '');       // Remove leading/trailing dashes
   next();
 });
-// Add method to convert menu Map to array format for frontend
-shopSchema.methods.toJSON = function() {
-  const obj = this.toObject();
-  
-  // Convert menu Map to array format
-  if (obj.menu instanceof Map) {
-    const menuArray = [];
-    obj.menu.forEach((items, categoryName) => {
-      menuArray.push({
-        categoryName,
-        items
-      });
-    });
-    obj.menu = menuArray;
-  }
-  
-  return obj;
-};
 
 const Shop = mongoose.model('Shop', shopSchema);
 

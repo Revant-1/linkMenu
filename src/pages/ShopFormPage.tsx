@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useShop } from '../contexts/ShopContext';
 import ShopForm from '../components/ShopForm';
@@ -8,6 +8,7 @@ function ShopFormPage() {
   const navigate = useNavigate();
   const { shopId } = useParams();
   const { getShopById, createShop, updateShop } = useShop();
+  const [error, setError] = useState('');
 
   const shop = shopId ? getShopById(shopId) : undefined;
   const initialData = shop || {
@@ -32,15 +33,20 @@ function ShopFormPage() {
 
   const handleSubmit = async (data: ShopFormData) => {
     try {
+      setError('');
       if (shopId) {
         await updateShop(shopId, data);
       } else {
-        await createShop(data);
+        const newShop = await createShop(data);
+        if (!newShop) {
+          throw new Error('Failed to create shop - no response from server');
+        }
       }
       navigate('/admin');
     } catch (error) {
       console.error('Error saving shop:', error);
-      alert('Failed to save shop. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save shop. Please try again.';
+      setError(errorMessage);
     }
   };
 
@@ -51,7 +57,7 @@ function ShopFormPage() {
           {shopId ? 'Edit Shop' : 'Create New Shop'}
         </h1>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <ShopForm initialData={initialData} onSubmit={handleSubmit} />
+          <ShopForm initialData={initialData} onSubmit={handleSubmit} error={error} />
         </div>
       </div>
     </div>

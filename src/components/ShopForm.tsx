@@ -6,6 +6,7 @@ import ColorPicker from './ColorPicker';
 interface ShopFormProps {
   initialData?: ShopFormData;
   onSubmit: (data: ShopFormData) => void;
+  error?: string;
 }
 
 const emptyMenuItem: MenuItem = {
@@ -65,7 +66,7 @@ const predefinedThemes = {
   }
 };
 
-const ShopForm: React.FC<ShopFormProps> = ({ initialData, onSubmit }) => {
+const ShopForm: React.FC<ShopFormProps> = ({ initialData, onSubmit, error }) => {
   const [formData, setFormData] = useState<ShopFormData>(
     initialData || {
       name: '',
@@ -187,6 +188,11 @@ const ShopForm: React.FC<ShopFormProps> = ({ initialData, onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
       {/* Basic Information */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Basic Information</h2>

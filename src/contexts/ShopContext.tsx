@@ -6,7 +6,7 @@ interface ShopContextType {
   loading: boolean;
   error: string | null;
   getShopById: (id: string) => ShopFormData | undefined;
-  createShop: (data: ShopFormData) => Promise<void>;
+  createShop: (data: ShopFormData) => Promise<ShopFormData>;
   updateShop: (id: string, data: ShopFormData) => Promise<void>;
   deleteShop: (id: string) => Promise<void>;
   getShopBySlug: (name: string) => ShopFormData | undefined;
@@ -18,7 +18,7 @@ const defaultContextValue: ShopContextType = {
   loading: false,
   error: null,
   getShopById: () => undefined,
-  createShop: async () => {},
+  createShop: async () => { throw new Error('Not implemented'); },
   updateShop: async () => {},
   deleteShop: async () => {},
   getShopBySlug: () => undefined,
@@ -90,10 +90,13 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         throw new Error(errorData.message || 'Failed to create shop');
       }
 
-      setShops((prevShops) => [...prevShops, shopData]);
+      const createdShop = await response.json();
+      setShops((prevShops) => [...prevShops, createdShop]);
+      return createdShop;
     } catch (err) {
       console.error('Error creating shop:', err);
       setError(err instanceof Error ? err.message : 'Failed to create shop');
+      throw err; // Re-throw the error so the component can handle it
     } finally {
       setLoading(false);
     }
