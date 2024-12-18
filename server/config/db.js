@@ -22,23 +22,7 @@ const connectDB = async () => {
     const shopCount = await Shop.countDocuments();
     console.log('Number of shops in database:', shopCount);
 
-    // Check if admin user exists
-    const adminExists = await User.findOne({ email: 'admin@example.com' });
     
-    if (!adminExists) {
-      // Create default admin user
-      await User.create({
-        name: 'Admin',
-        email: 'admin@example.com',
-        password: 'admin123',
-        isAdmin: true
-      });
-      console.log('Default admin user created');
-    }
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
-  }
 };
 
 export default connectDB;
