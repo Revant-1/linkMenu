@@ -21,7 +21,10 @@ const connectDB = async () => {
     // Count documents in shops collection
     const shopCount = await Shop.countDocuments();
     console.log('Number of shops in database:', shopCount);
-
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
     
 };
 
